@@ -7,32 +7,32 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TripService {
+public class TripService<T extends TripDto, U extends TripRepository> implements Service<T, U> {
 
-    private final TripRepository tripRepository;
+    private final U tripRepository;
 
     @Autowired
-    public TripService(TripRepository tripRepository) {
+    public TripService(U tripRepository) {
         this.tripRepository = tripRepository;
     }
 
-    public List<TripDto> findAll() {
+    public List<T> findAll() {
         return tripRepository.findAll();
     }
 
-    public TripDto findById(Long id) {
-        return tripRepository.findById(id);
+    public T findById(Long id) throws TripNotFoundExc {
+        return (T) tripRepository.findById(id);
     }
 
-    public void save(TripDto trip) {
+    public void save(T trip) {
         tripRepository.save(trip);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id) throws TripNotFoundExc {
         tripRepository.delete(id);
     }
 
-    public void update(TripDto newTrip) {
+    public void update(T newTrip) throws TripNotFoundExc {
         tripRepository.update(newTrip);
     }
 }
