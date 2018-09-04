@@ -18,42 +18,42 @@ import java.util.List;
 
 @RestController
 @RequestMapping(ApiConstant.API_V_1 + "/trips")
-public class TripsController {
+public class TripsController<T extends TripDto, S extends TripService> implements Controller<T, S> {
 
-    private final TripService tripService;
+    private final S tripService;
 
     @Autowired
-    public TripsController(TripService tripService) {
+    public TripsController(S tripService) {
         this.tripService = tripService;
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<TripDto> findAll() {
+    public List<T> findAll() {
         return tripService.findAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TripDto findById(@PathVariable("id") final Long id) {
-        return tripService.findById(id);
+    public T findById(@PathVariable("id") final Long id) throws TripNotFoundExc {
+        return (T) tripService.findById(id);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody final TripDto trip) {
+    public void create(@RequestBody final T trip) {
         tripService.save(trip);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") final Long id) {
+    public void delete(@PathVariable("id") final Long id) throws TripNotFoundExc {
         tripService.delete(id);
     }
 
-    @PutMapping
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void update(@RequestBody final TripDto newTrip) {
+    public void update(@RequestBody final T newTrip) throws TripNotFoundExc {
         tripService.update(newTrip);
     }
 
