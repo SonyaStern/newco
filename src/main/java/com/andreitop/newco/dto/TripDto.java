@@ -1,14 +1,31 @@
 package com.andreitop.newco.dto;
 
-import java.io.Serializable;
+import org.hibernate.validator.constraints.Length;
 
-public class TripDto implements Serializable {
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-    private static final long serialVersionUID = 5914366185889783660L;
+public class TripDto implements Dto {
 
+    interface New {}
+
+    interface Exist {}
+
+    interface Update extends Exist{}
+
+    @NotNull(groups = {Update.class})
     private Long id;
+
+    @Length(min = 3, max = 30)
+    @NotNull(groups = {New.class, Update.class})
     private String origin;
+
+    @Length(min = 3, max = 30)
+    @NotNull(groups = {New.class, Update.class})
     private String destination;
+
+    @Size(min = 1, max = 1000000)
+    @NotNull(groups = {New.class, Update.class})
     private Integer price;
 
     public Long getId() {
@@ -43,3 +60,4 @@ public class TripDto implements Serializable {
         this.price = price;
     }
 }
+
