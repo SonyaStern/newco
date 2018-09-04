@@ -2,41 +2,49 @@ package com.andreitop.newco.repository;
 
 import com.andreitop.newco.dto.TripDto;
 import org.springframework.stereotype.Repository;
+import com.andreitop.newco.error.NoTripsHandler;
+import com.andreitop.newco.error.TripNotFoundExc;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class TripRepository  {
+public class TripRepository<T extends TripDto> implements Repository<T>{
 
-    private final List<TripDto> trips = new ArrayList<>();
+    private final List<T> trips = new ArrayList<>();
 
-    public List<TripDto> findAll() {
-        return trips;
+    public List<T> findAll() {
+        if (trips.size() > 0) {
+            return trips;
+        } else {
+            throw new NoTripsHandler();
+        }
     }
 
-    public TripDto findById(final Long id) {
+    public T findById(final Long id) throws TripNotFoundExc {
         return trips.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(TripNotFoundExc::new);
     }
 
-    public void save(final TripDto trip) {
+    public void save(final T trip) {
         trip.setId((long) (trips.size() + 1));
         trips.add(trip);
     }
 
-    public void delete(final Long id) {
+    public void delete(final Long id) throws TripNotFoundExc {
         trips.stream()
                 .filter(t -> t.getId().equals(id))
                 .findFirst()
-                .ifPresent(trips::remove);
+                .map(trips::remove)
+                .orElseThrow(TripNotFoundExc::new);
     }
 
-    public void update(final TripDto newTrip) {
+    public void update(final T newTrip) throws TripNotFoundExc {
         trips.stream()
                 .filter(t -> t.getId().equals(newTrip.getId()))
                 .findFirst()
-                .ifPresent(t -> trips.set(trips.indexOf(t), newTrip));
+                .map(t -> trips.set(trips.indexOf(t), newTrip))
+                .orElseThrow(TripNotFoundExc::new);
     }
 }
