@@ -30,35 +30,32 @@ public class TripsController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TripDto>> findAll() {
-        return new ResponseEntity<>(tripService.findAll(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public List<TripDto> findAll() {
+        return tripService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TripDto> findById(@PathVariable("id") final Long id) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-        return ResponseEntity.ok()
-                .headers(headers)
-                .body(tripService.findById(id));
+    @ResponseStatus(HttpStatus.OK)
+    public Optional<TripDto> findById(@PathVariable("id") final Long id) {
+        return tripService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@Valid @RequestBody final TripDto trip) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public void create(@RequestBody final TripDto trip) {
         tripService.save(trip);
-        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") final Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") final Long id) {
         tripService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping
-    public ResponseEntity<Void> update(@Valid @RequestBody final TripDto newTrip) {
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@RequestBody final TripDto newTrip) {
         tripService.update(newTrip);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-}
